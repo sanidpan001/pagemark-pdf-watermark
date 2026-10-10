@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PageMark — Free PDF Watermark Tool | Add Text &amp; Image Watermarks</title>
+<meta name="description" content="PageMark is a free PDF Watermark Tool. Add text or image watermarks to every page with opacity, rotation, tiled mode and a 9-point position grid — privately in your browser.">
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdn.jsdelivr.net/npm/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@700;900&family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+body{font-family:'Inter',system-ui,sans-serif;background:#fdfcff;color:#1e1b2e}
+.font-display{font-family:'Fraunces',serif}
+.paper{background:#fff;border:1px solid #e9e4f5;box-shadow:0 18px 50px rgba(109,40,217,.10)}
+.pos-btn{aspect-ratio:1;border:2px solid #ddd6fe;border-radius:.75rem;background:#fff;font-size:11px;font-weight:700;color:#6d28d9;cursor:pointer}
+.pos-btn.active{background:#6d28d9;color:#fff;border-color:#6d28d9}
+.pos-btn:hover{border-color:#6d28d9}
+input[type=range]{accent-color:#6d28d9}
+.drop-active{border-color:#6d28d9!important;background:#f5f3ff!important}
+</style>
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Is PageMark really free to use?","acceptedAnswer":{"@type":"Answer","text":"Yes. PageMark is completely free with unlimited usage. There is no signup, no paywall and no added branding on your finished PDF."}},{"@type":"Question","name":"Are my PDF files uploaded to a server?","acceptedAnswer":{"@type":"Answer","text":"No. PageMark works entirely in your browser using pdf-lib. Your files never leave your device, which makes it suitable for confidential documents."}},{"@type":"Question","name":"Can I watermark every page at once?","acceptedAnswer":{"@type":"Answer","text":"Yes. PageMark applies your chosen text or image watermark to all pages of the PDF in a single pass, keeping page sizes and content unchanged."}},{"@type":"Question","name":"What is tiled mode and when should I use it?","acceptedAnswer":{"@type":"Answer","text":"Tiled mode repeats the watermark across the whole page in a grid. It offers stronger protection for drafts, proofs and preview documents because the mark cannot be cropped away from one corner."}},{"@type":"Question","name":"Can I use my company logo as a watermark?","acceptedAnswer":{"@type":"Answer","text":"Yes. Switch to Image mode, choose a PNG or JPG logo, then adjust its size, opacity, rotation and position. Transparent PNG logos usually give the cleanest result."}},{"@type":"Question","name":"Will watermarking change the quality of my PDF?","acceptedAnswer":{"@type":"Answer","text":"No. PageMark draws the watermark on top of each existing page without re-encoding the page content, so text, images and vector graphics keep their original quality."}}]}
+</script>
+</head>
+<body id="top">
+<header class="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-purple-100">
+  <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+    <a href="#top" class="flex items-center gap-2.5"><span class="w-9 h-9 rounded-xl bg-violet-700 text-white grid place-items-center text-lg font-black">P</span><span class="font-display font-black text-2xl tracking-tight text-violet-950">Page<span class="text-violet-700">Mark</span></span></a>
+    <nav class="flex items-center gap-2 text-sm font-semibold"><a href="#top" class="px-3 py-2 rounded-lg hover:bg-violet-50">Home</a><a href="https://fixoraa.tech" class="px-3 py-2 rounded-lg bg-violet-700 text-white hover:bg-violet-800">More Tools</a></nav>
+  </div>
+</header>
+<div class="no-print mx-auto max-w-6xl px-4 sm:px-6 pt-4" role="complementary" aria-label="Advertisement">
+  <div class="mx-auto text-center" style="max-width:728px">
+    <span class="block text-[10px] tracking-[0.18em] uppercase text-slate-400 mb-1.5">Advertisement</span>
+    <div class="flex justify-center overflow-hidden">
+      <div class="origin-top scale-[0.44] sm:scale-100 shrink-0">
+        <script>
+          atOptions = { 'key' : '4e68ac77881c17fe128a46565d9a4e8c', 'format' : 'iframe', 'height' : 90, 'width' : 728, 'params' : {} };
+        </script>
+        <script src="https://www.highrevenueformat.com/4e68ac77881c17fe128a46565d9a4e8c/invoke.js"></script>
+      </div>
+    </div>
+  </div>
+</div>
+<main class="max-w-6xl mx-auto px-4 sm:px-6 py-8">
+  <div class="text-center max-w-2xl mx-auto">
+    <span class="inline-flex items-center gap-2 bg-violet-100 text-violet-800 text-xs font-bold px-3 py-1.5 rounded-full">✓ Unlimited Free Usage &nbsp;•&nbsp; No signup &nbsp;•&nbsp; Files never leave your device</span>
+    <h1 class="font-display text-4xl sm:text-5xl font-black mt-4 leading-tight">Stamp every page,<br><span class="text-violet-700">beautifully.</span></h1>
+    <p class="text-slate-600 mt-3">Add a text or logo watermark to an entire PDF in seconds — control opacity, rotation, tiling and exact placement on a nine-point grid.</p>
+  </div>
+  <section class="paper rounded-3xl mt-8 p-4 sm:p-7" aria-label="PDF Watermark Tool">
+    <div class="grid lg:grid-cols-5 gap-6">
+      <div class="lg:col-span-3 space-y-5">
+        <div id="dropZone" class="border-2 border-dashed border-violet-300 rounded-2xl p-6 text-center cursor-pointer hover:bg-violet-50 transition">
+          <div class="text-4xl">📄</div>
+          <p class="font-bold mt-2">Drop your PDF here or click to browse</p>
+          <p class="text-sm text-slate-500">One PDF file • Processed locally in your browser</p>
+          <input type="file" id="pdfInput" accept="application/pdf,.pdf" class="hidden">
+          <p id="fileInfo" class="text-sm font-semibold text-violet-800 mt-3 hidden"></p>
+        </div>
+        <div>
+          <label class="font-bold text-sm">Watermark type</label>
+          <div class="grid grid-cols-2 gap-2 mt-2">
+            <button type="button" id="typeText" class="py-3 rounded-xl font-bold bg-violet-700 text-white">Aa &nbsp;Text</button>
+            <button type="button" id="typeImage" class="py-3 rounded-xl font-bold bg-violet-50 text-violet-800 border border-violet-200">🖼 Image / Logo</button>
+          </div>
+        </div>
+        <div id="textPanel" class="space-y-4">
+          <div><label for="wmText" class="font-bold text-sm">Watermark text</label><input id="wmText" value="CONFIDENTIAL" maxlength="80" class="w-full mt-1 border border-violet-200 rounded-xl px-4 py-3 font-semibold focus:outline-none focus:ring-2 focus:ring-violet-600"></div>
+          <div class="grid grid-cols-2 gap-3">
+            <div><label for="fontSize" class="font-bold text-sm">Font size <span id="fontSizeVal" class="text-violet-700">42 pt</span></label><input type="range" id="fontSize" min="8" max="120" value="42" class="w-full mt-2"></div>
+            <div><label for="wmColor" class="font-bold text-sm">Colour</label><input type="color" id="wmColor" value="#6d28d9" class="w-full h-11 mt-1 rounded-xl border border-violet-200 bg-white cursor-pointer"></div>
+          </div>
+          <div class="flex flex-wrap gap-2" id="presets">
+            <button data-t="CONFIDENTIAL" class="px-3 py-1.5 rounded-full bg-violet-50 border border-violet-200 text-xs font-bold">CONFIDENTIAL</button>
+            <button data-t="DRAFT" class="px-3 py-1.5 rounded-full bg-violet-50 border border-violet-200 text-xs font-bold">DRAFT</button>
+            <button data-t="DO NOT COPY" class="px-3 py-1.5 rounded-full bg-violet-50 border border-violet-200 text-xs font-bold">DO NOT COPY</button>
+            <button data-t="SAMPLE" class="px-3 py-1.5 rounded-full bg-violet-50 border border-violet-200 text-xs font-bold">SAMPLE</button>
+          </div>
+        </div>
+        <div id="imagePanel" class="space-y-4 hidden">
+          <div class="border border-violet-200 rounded-2xl p-4 text-center">
+            <p class="font-bold text-sm">Watermark image (PNG or JPG)</p>
+            <p class="text-xs text-slate-500 mt-1">A transparent PNG logo works best.</p>
+            <input type="file" id="imageInput" accept="image/png,image/jpeg" class="mt-3 text-sm w-full">
+            <img id="imagePreview" alt="Watermark preview" class="hidden max-h-24 mx-auto mt-3 rounded-lg border">
+          </div>
+          <div><label for="imgWidth" class="font-bold text-sm">Image width <span id="imgWidthVal" class="text-violet-700">180 pt</span></label><input type="range" id="imgWidth" min="40" max="500" value="180" class="w-full mt-2"></div>
+        </div>
+      </div>
+      <div class="lg:col-span-2 space-y-5">
+        <div>
+          <label class="font-bold text-sm">Position — 9-point grid</label>
+          <div class="grid grid-cols-3 gap-2 mt-2 max-w-[220px]" id="posGrid">
+            <button class="pos-btn" data-pos="top-left">↖ TL</button><button class="pos-btn" data-pos="top-center">↑ TC</button><button class="pos-btn" data-pos="top-right">↗ TR</button>
+            <button class="pos-btn" data-pos="middle-left">← ML</button><button class="pos-btn active" data-pos="center">● Centre</button><button class="pos-btn" data-pos="middle-right">→ MR</button>
+            <button class="pos-btn" data-pos="bottom-left">↙ BL</button><button class="pos-btn" data-pos="bottom-center">↓ BC</button><button class="pos-btn" data-pos="bottom-right">↘ BR</button>
+          </div>
+        </div>
+        <div><label for="opacity" class="font-bold text-sm">Opacity <span id="opacityVal" class="text-violet-700">35%</span></label><input type="range" id="opacity" min="5" max="100" value="35" class="w-full mt-2"><p class="text-xs text-slate-500">Lower is subtler; 25–45% suits most drafts.</p></div>
+        <div><label for="rotation" class="font-bold text-sm">Rotation <span id="rotationVal" class="text-violet-700">-30°</span></label><input type="range" id="rotation" min="-90" max="90" value="-30" class="w-full mt-2"></div>
+        <label class="flex items-center justify-between gap-3 bg-violet-50 border border-violet-100 rounded-2xl px-4 py-3 cursor-pointer"><span><span class="font-bold text-sm block">Tiled mode</span><span class="text-xs text-slate-500">Repeat the mark across the whole page</span></span><input type="checkbox" id="tiled" class="w-5 h-5 accent-violet-700"></label>
+        <div class="bg-violet-950 text-white rounded-2xl p-4">
+          <p class="text-xs uppercase tracking-widest text-violet-300 font-bold">Live preview</p>
+          <div class="bg-white rounded-lg mt-3 relative overflow-hidden" style="aspect-ratio:3/4">
+            <div class="absolute inset-x-4 top-4 space-y-2"><div class="h-2 bg-slate-200 rounded"></div><div class="h-2 bg-slate-200 rounded w-5/6"></div><div class="h-2 bg-slate-200 rounded w-4/6"></div><div class="h-2 bg-slate-100 rounded w-full mt-5"></div><div class="h-2 bg-slate-100 rounded w-3/6"></div></div>
+            <div id="previewMark" class="absolute font-black text-violet-700 whitespace-nowrap" style="left:50%;top:50%;transform:translate(-50%,-50%) rotate(-30deg);opacity:.35;font-size:28px">CONFIDENTIAL</div>
+            <img id="previewImg" alt="" class="hidden absolute" style="left:50%;top:50%;transform:translate(-50%,-50%);opacity:.35;width:110px">
+          </div>
+          <p id="summary" class="text-sm text-violet-100 mt-3">No PDF loaded yet. Add a file to see page count and size.</p>
+        </div>
+        <button id="applyBtn" class="w-full py-4 rounded-2xl bg-violet-700 hover:bg-violet-800 text-white font-extrabold text-lg shadow-lg shadow-violet-200">Apply watermark to all pages</button>
+        <p id="status" class="text-sm font-semibold text-center min-h-[20px]" role="status"></p>
+        <a id="downloadLink" class="hidden w-full text-center py-3.5 rounded-2xl bg-emerald-600 hover:bg-emerald-700 text-white font-extrabold" download>⬇ Download watermarked PDF</a>
+      </div>
+    </div>
+  </section>
+  <section class="grid sm:grid-cols-3 gap-4 mt-6">
+    <div class="paper rounded-2xl p-5"><div class="text-2xl">🔒</div><h3 class="font-bold mt-2">Private by design</h3><p class="text-sm text-slate-600 mt-1">Your PDF is read and written on your own device. Nothing is uploaded, stored or shared.</p></div>
+    <div class="paper rounded-2xl p-5"><div class="text-2xl">▦</div><h3 class="font-bold mt-2">Tiled protection</h3><p class="text-sm text-slate-600 mt-1">Repeat the mark across every page so it cannot simply be cropped out of a corner.</p></div>
+    <div class="paper rounded-2xl p-5"><div class="text-2xl">🎯</div><h3 class="font-bold mt-2">Exact placement</h3><p class="text-sm text-slate-600 mt-1">A nine-point grid, rotation and opacity controls give you a stamp that looks intentional.</p></div>
+  </section>
+  <article id="seo-article" class="max-w-none mt-12 bg-white rounded-3xl border border-purple-100 p-6 sm:p-10">
+    <h2 class="font-display text-3xl font-black">The Complete Guide to Watermarking a PDF with PageMark</h2>
+    <p>A watermark is a quiet promise printed across a document. It tells every reader, before they reach the first sentence, how the file should be treated: this is a draft, this is confidential, this is a sample, this belongs to someone. PageMark was built to make adding that promise to a PDF fast, precise and private. Instead of sending sensitive files to an unknown server, the whole job happens inside your browser. You choose a file, design the mark, preview the effect, and download a finished copy in which every single page carries the same carefully placed stamp. Nothing about the underlying document changes. Its text stays selectable, its images stay sharp, and its pages keep their original sizes.</p>
+    <p>People watermark PDFs for many different reasons, and each reason calls for a slightly different style. A lawyer circulating a draft agreement wants a word that reviewers cannot miss, often placed diagonally across the centre of the page at a moderate opacity. A photographer sending proofs to a client wants a repeated, lighter pattern that protects the work without hiding it. A teacher sharing worksheets may simply want the school name in a corner. A finance team distributing statements often needs a discreet notice at the foot of every page. Because these needs differ so much, a useful watermark tool cannot offer only one fixed stamp. It needs control over wording, size, colour, transparency, angle, repetition and position, and it needs to apply those choices consistently across a document that might run to hundreds of pages. That consistency is exactly what PageMark delivers.</p>
+    <h3 class="font-display text-2xl font-bold mt-6">Text watermarks that say exactly what you mean</h3>
+    <p>The most common watermark is a short piece of text, and the wording matters more than most people expect. CONFIDENTIAL signals a legal and ethical duty to keep the contents private. DRAFT warns readers that figures and clauses may still change. SAMPLE makes clear that the file is an example rather than a final deliverable. DO NOT COPY discourages casual redistribution, while a company name, a date or a reference number can turn the mark into a simple ownership stamp. PageMark gives you a generous text field with quick presets for the phrases people reach for most often, plus full freedom to type your own. You can set the size from a small footer notice to a bold diagonal banner, and pick any colour, from a deep royal purple for a formal document to a warm grey for something understated, or a strong red when the warning really needs to stand out.</p>
+    <p>Size and colour only work well when transparency is handled properly, which is why the opacity slider is the heart of the tool. At full opacity a watermark behaves like a headline and will fight with the content underneath it. At very low opacity it can disappear against a busy page. For most documents, somewhere between a quarter and a half opacity produces the classic watermark look: clearly legible when a reader looks for it, yet calm enough that the page remains easy to read. Diagonal presentation copies, internal reviews and price lists often sit happily around thirty percent. Legal notices placed in a corner can be stronger, because they do not sit on top of body text at all. Experimenting takes seconds in PageMark because the preview updates as you move the slider, so you can find the balance before you commit to the download.</p>
+    <h3 class="font-display text-2xl font-bold mt-6">Image and logo watermarks for branded documents</h3>
+    <p>Sometimes words are not enough. A logo carries instant recognition, and stamping it across proposals, invoices, catalogues and reports gives even a routine PDF a professional finish. In image mode, PageMark accepts a PNG or JPG file and places it on every page at the width you choose. Transparent PNG logos are ideal, because the artwork floats over the page without an awkward white rectangle behind it. If your logo is colourful, lowering the opacity softens it into the background so it supports the document instead of competing with it. If your logo is a single colour, it can behave almost like a traditional rubber stamp, especially when combined with a slight rotation. Many small businesses use this approach to protect price lists and design mock-ups: the branding stays visible in screenshots and printed copies, reminding everyone where the work came from.</p>
+    <p>Rotation deserves a moment of attention because a few degrees change the character of a mark completely. A perfectly horizontal watermark in the centre of the page reads as a label. Tilt it to around thirty degrees and it becomes the familiar diagonal stamp seen on drafts and proofs around the world, harder to ignore and harder to crop away. A small tilt of ten or fifteen degrees feels informal and hand-applied, which suits creative proofs. Vertical or near-vertical angles are unusual but can work along the edge of a landscape document. PageMark lets you rotate from minus ninety to plus ninety degrees, so you can match the conventions of your industry or deliberately break them, while the live preview shows the exact angle before a single page is written.</p>
+    <h3 class="font-display text-2xl font-bold mt-6">The nine-point grid and tiled mode</h3>
+    <p>Placement is where amateur watermarks usually give themselves away. A mark dropped at a random offset looks accidental, and one that covers a headline or a signature block looks careless. PageMark solves this with a nine-point position grid: top left, top centre, top right, middle left, centre, middle right, bottom left, bottom centre and bottom right. Each point anchors the watermark with sensible margins, so a footer notice sits neatly at the bottom centre, a reference stamp hugs the top right, and a big diagonal warning lands exactly in the middle. Because documents mix portrait and landscape pages, the anchor is calculated separately for every page using that page's own width and height. A stamp therefore stays in the corner it belongs in, even when the document changes orientation halfway through.</p>
+    <p>Tiled mode takes protection a step further. Instead of one mark per page, it repeats the text or logo across the entire sheet in a regular pattern. A single corner stamp can be cropped out of a screenshot in seconds; a tiled pattern cannot, because removing it would mean editing every inch of the page. That makes tiling the right choice for exam papers before release, unreleased book chapters, design proofs, property photographs compiled into a PDF, and any preview where you genuinely need the content to stay recognisably protected. Tiling works best with a lighter opacity and a moderate rotation, so the pattern feels like textured paper rather than a fence. Used gently, it can even look elegant, closer to the watermark in fine stationery than to a warning sign.</p>
+    <h3 class="font-display text-2xl font-bold mt-6">Privacy, quality and how the tool works</h3>
+    <p>PageMark is powered by pdf-lib, a well-regarded JavaScript library that reads and writes PDF files directly. When you apply a watermark, the library opens your document, draws the text or image on top of each page, and saves a new file. The original pages are not flattened into pictures and are not re-compressed, so searchable text remains searchable, links keep working where the format allows, and photographs do not lose quality. The work is done by your own device, which has two practical benefits. First, speed: there is no upload queue and no waiting for a server, so even a long document is usually finished in moments. Second, privacy: contracts, medical letters, financial statements, identity documents and unpublished manuscripts never travel across the internet at all. For many users that privacy is not a bonus feature; it is the entire reason to choose a browser-based tool.</p>
+    <p>Good watermarking also means knowing its limits, and being honest about them helps you use the tool well. A watermark applied on top of a page is a strong visual and social deterrent, but it is not encryption. A determined person with editing software may be able to remove marks from some files, just as a paper watermark can be defeated by retyping a document. If a file needs true access control, combine watermarking with a password, restricted sharing and sensible retention. Watermarks shine brightest as communication: they set expectations instantly, discourage casual copying, prove ownership at a glance, and make leaked copies traceable when each recipient receives a uniquely marked version. Adding a recipient name, a date or a reference code to the text is a simple, powerful habit used by legal, publishing and training teams everywhere.</p>
+    <h3 class="font-display text-2xl font-bold mt-6">A simple workflow that respects your time</h3>
+    <p>The workflow is deliberately short. Drop in a PDF and PageMark reports its page count and file size so you know you picked the right document. Choose text or image mode and write or upload the mark. Set the position on the grid, or switch on tiling for full-page coverage. Tune opacity and rotation while watching the preview, then press one button to apply the watermark to all pages. The finished file downloads with a clear watermarked suffix, leaving your original untouched on your device. There is no account to create, no credits to buy, no page limit to negotiate and no branding added to your output. Whether you are protecting one confidential contract before an important meeting or stamping a whole catalogue before it goes to print partners, PageMark gives you a clean, repeatable way to mark every page with confidence.</p>
+    <h3 class="font-display text-2xl font-bold mt-8">Frequently Asked Questions</h3>
+    <div class="space-y-4 mt-4">
+      <div><h4 class="font-bold">Is PageMark really free to use?</h4><p>Yes. PageMark is completely free with unlimited usage. There is no signup, no paywall and no added branding on your finished PDF.</p></div>
+      <div><h4 class="font-bold">Are my PDF files uploaded to a server?</h4><p>No. PageMark works entirely in your browser using pdf-lib. Your files never leave your device, which makes it suitable for confidential documents.</p></div>
+      <div><h4 class="font-bold">Can I watermark every page at once?</h4><p>Yes. PageMark applies your chosen text or image watermark to all pages of the PDF in a single pass, keeping page sizes and content unchanged.</p></div>
+      <div><h4 class="font-bold">What is tiled mode and when should I use it?</h4><p>Tiled mode repeats the watermark across the whole page in a grid. It offers stronger protection for drafts, proofs and preview documents because the mark cannot be cropped away from one corner.</p></div>
+      <div><h4 class="font-bold">Can I use my company logo as a watermark?</h4><p>Yes. Switch to Image mode, choose a PNG or JPG logo, then adjust its size, opacity, rotation and position. Transparent PNG logos usually give the cleanest result.</p></div>
+      <div><h4 class="font-bold">Will watermarking change the quality of my PDF?</h4><p>No. PageMark draws the watermark on top of each existing page without re-encoding the page content, so text, images and vector graphics keep their original quality.</p></div>
+    </div>
+  </article>
+</main>
+<div class="no-print mx-auto max-w-6xl px-4 sm:px-6 pb-4" role="complementary" aria-label="Advertisement">
+  <div class="mx-auto text-center" style="max-width:728px">
+    <span class="block text-[10px] tracking-[0.18em] uppercase text-slate-400 mb-1.5">Advertisement</span>
+    <div class="flex justify-center overflow-hidden">
+      <script async src="https://js.wpadmngr.com/static/adManager.js" data-admpid="464498"></script>
+    </div>
+  </div>
+</div>
+<footer class="border-t border-purple-100 py-8 text-center text-sm text-slate-500"><p class="font-display font-black text-lg text-violet-950">PageMark</p><p class="mt-1">Free PDF watermarking, privately in your browser. Your original file is never changed.</p></footer>
+<script id="lib-pagemark">
+var PageMarkLib = {
+  POSITIONS: ['top-left','top-center','top-right','middle-left','center','middle-right','bottom-left','bottom-center','bottom-right'],
+  clampOpacity: function(v){
+    var n = Number(v);
+    if (!isFinite(n)) return 0.35;
+    if (n < 0.05) return 0.05;
+    if (n > 1) return 1;
+    return Math.round(n * 100) / 100;
+  },
+  normalizeRotation: function(deg){
+    var n = Number(deg);
+    if (!isFinite(n)) return 0;
+    var r = ((n % 360) + 360) % 360;
+    if (r > 180) r -= 360;
+    return r;
+  },
+  hexToRgb01: function(hex){
+    if (typeof hex !== 'string') return { r: 0.42, g: 0.27, b: 0.76 };
+    var h = hex.trim().replace(/^#/, '');
+    if (/^[0-9a-fA-F]{3}$/.test(h)) h = h.split('').map(function(c){ return c + c; }).join('');
+    if (!/^[0-9a-fA-F]{6}$/.test(h)) return { r: 0.42, g: 0.27, b: 0.76 };
+    return { r: parseInt(h.slice(0,2),16)/255, g: parseInt(h.slice(2,4),16)/255, b: parseInt(h.slice(4,6),16)/255 };
+  },
+  rgb01ToHex: function(r,g,b){
+    function p(v){ var n = Math.max(0, Math.min(255, Math.round(Number(v)*255))); return n.toString(16).padStart(2,'0'); }
+    return '#' + p(r) + p(g) + p(b);
+  },
+  sanitizeText: function(text, maxLen){
+    if (typeof text !== 'string') return '';
+    var limit = maxLen || 80;
+    return text.replace(/\s+/g,' ').trim().slice(0, limit);
+  },
+  estimateTextWidth: function(text, fontSize){
+    var t = PageMarkLib.sanitizeText(text || '');
+    var size = Number(fontSize) || 36;
+    if (size < 8) size = 8; if (size > 120) size = 120;
+    return Math.round(t.length * size * 0.58 * 100) / 100;
+  },
+  clampFontSize: function(v){
+    var n = Number(v);
+    if (!isFinite(n)) return 36;
+    return Math.max(8, Math.min(120, Math.round(n)));
+  },
+  getAnchor: function(position, pageW, pageH, wmW, wmH, margin){
+    var m = Number(margin); if (!isFinite(m) || m < 0) m = 36;
+    var pw = Number(pageW) || 612, ph = Number(pageH) || 792;
+    var w = Number(wmW) || 0, h = Number(wmH) || 0;
+    var col = 'center', row = 'middle';
+    if (position === 'top-left' || position === 'middle-left' || position === 'bottom-left') col = 'left';
+    if (position === 'top-right' || position === 'middle-right' || position === 'bottom-right') col = 'right';
+    if (position && position.indexOf('top-') === 0) row = 'top';
+    if (position && position.indexOf('bottom-') === 0) row = 'bottom';
+    var x, y;
+    if (col === 'left') x = m; else if (col === 'right') x = pw - w - m; else x = (pw - w) / 2;
+    if (row === 'top') y = ph - h - m; else if (row === 'bottom') y = m; else y = (ph - h) / 2;
+    return { x: Math.round(x*100)/100, y: Math.round(y*100)/100, col: col, row: row };
+  },
+  getTilePositions: function(pageW, pageH, wmW, wmH, gapX, gapY){
+    var pw = Number(pageW) || 612, ph = Number(pageH) || 792;
+    var gx = Number(gapX); if (!isFinite(gx) || gx < 40) gx = 220;
+    var gy = Number(gapY); if (!isFinite(gy) || gy < 40) gy = 220;
+    var out = [];
+    for (var y = 40; y < ph - 10; y += gy) {
+      for (var x = 24; x < pw - 10; x += gx) { out.push({ x: x, y: y }); }
+    }
+    if (out.length === 0) out.push({ x: 24, y: 40 });
+    if (out.length > 200) out = out.slice(0, 200);
+    return out;
+  },
+  tileCount: function(pageW, pageH, gapX, gapY){
+    return PageMarkLib.getTilePositions(pageW, pageH, 0, 0, gapX, gapY).length;
+  },
+  validateConfig: function(cfg){
+    var errors = [];
+    if (!cfg || typeof cfg !== 'object') return { valid: false, errors: ['No settings provided.'] };
+    if (cfg.type !== 'text' && cfg.type !== 'image') errors.push('Choose a text or image watermark.');
+    if (cfg.type === 'text' && !PageMarkLib.sanitizeText(cfg.text || '')) errors.push('Enter watermark text.');
+    if (cfg.type === 'image' && !cfg.hasImage) errors.push('Choose a watermark image.');
+    if (PageMarkLib.POSITIONS.indexOf(cfg.position) === -1 && !cfg.tiled) errors.push('Choose a position on the grid.');
+    var op = Number(cfg.opacity);
+    if (!isFinite(op) || op < 0.05 || op > 1) errors.push('Opacity must be between 5% and 100%.');
+    return { valid: errors.length === 0, errors: errors };
+  },
+  outputFileName: function(name){
+    if (!name || typeof name !== 'string') return 'watermarked.pdf';
+    var base = name.replace(/\.pdf$/i, '').replace(/[^a-zA-Z0-9-_ ]/g,'').trim() || 'document';
+    return base + '-watermarked.pdf';
+  },
+  formatFileSize: function(bytes){
+    var n = Number(bytes); if (!isFinite(n) || n < 0) return '0 B';
+    if (n < 1024) return n + ' B';
+    if (n < 1024*1024) return (Math.round(n/102.4)/10) + ' KB';
+    return (Math.round(n/(1024*102.4))/10) + ' MB';
+  }
+};
+if (typeof module !== 'undefined' && module.exports) module.exports = PageMarkLib;
+
+</script>
+<script>
+(function(){
+  var pdfBytes=null, pdfName='', pageCount=0, mode='text', position='center', imageBytes=null, imageType='png', imageURL='';
+  var $=function(id){return document.getElementById(id)};
+  var drop=$('dropZone');
+  drop.addEventListener('click',function(){ $('pdfInput').click(); });
+  drop.addEventListener('dragover',function(e){ e.preventDefault(); drop.classList.add('drop-active'); });
+  drop.addEventListener('dragleave',function(){ drop.classList.remove('drop-active'); });
+  drop.addEventListener('drop',function(e){ e.preventDefault(); drop.classList.remove('drop-active'); if(e.dataTransfer.files[0]) loadPdf(e.dataTransfer.files[0]); });
+  $('pdfInput').addEventListener('change',function(){ if(this.files[0]) loadPdf(this.files[0]); });
+  function setStatus(m,c){ var s=$('status'); s.textContent=m||''; s.style.color=c||'#334155'; }
+  async function loadPdf(file){
+    if(!/pdf$/i.test(file.type) && !/\.pdf$/i.test(file.name)){ setStatus('Please choose a PDF file.','#dc2626'); return; }
+    try{
+      pdfBytes=new Uint8Array(await file.arrayBuffer()); pdfName=file.name;
+      var doc=await PDFLib.PDFDocument.load(pdfBytes); pageCount=doc.getPageCount();
+      $('fileInfo').classList.remove('hidden'); $('fileInfo').textContent='✓ '+file.name+' • '+pageCount+' page'+(pageCount===1?'':'s')+' • '+PageMarkLib.formatFileSize(file.size);
+      $('summary').textContent=pageCount+' page'+(pageCount===1?'':'s')+' ready.';
+      setStatus('PDF loaded. Design your watermark, then apply.','#15803d');
+    }catch(e){ pdfBytes=null; setStatus('That PDF could not be read. It may be damaged or password-protected.','#dc2626'); }
+  }
+  function setMode(m){
+    mode=m;
+    $('textPanel').classList.toggle('hidden',m!=='text'); $('imagePanel').classList.toggle('hidden',m!=='image');
+    $('typeText').className='py-3 rounded-xl font-bold '+(m==='text'?'bg-violet-700 text-white':'bg-violet-50 text-violet-800 border border-violet-200');
+    $('typeImage').className='py-3 rounded-xl font-bold '+(m==='image'?'bg-violet-700 text-white':'bg-violet-50 text-violet-800 border border-violet-200');
+    updatePreview();
+  }
+  $('typeText').addEventListener('click',function(){setMode('text')});
+  $('typeImage').addEventListener('click',function(){setMode('image')});
+  document.querySelectorAll('#presets button').forEach(function(b){ b.addEventListener('click',function(){ $('wmText').value=b.getAttribute('data-t'); updatePreview(); }); });
+  document.querySelectorAll('#posGrid .pos-btn').forEach(function(b){ b.addEventListener('click',function(){ document.querySelectorAll('#posGrid .pos-btn').forEach(function(x){x.classList.remove('active')}); b.classList.add('active'); position=b.getAttribute('data-pos'); updatePreview(); }); });
+  $('imageInput').addEventListener('change',async function(){
+    var f=this.files[0]; if(!f) return;
+    imageBytes=new Uint8Array(await f.arrayBuffer()); imageType=/png/i.test(f.type)?'png':'jpg';
+    imageURL=URL.createObjectURL(f); $('imagePreview').src=imageURL; $('imagePreview').classList.remove('hidden'); updatePreview();
+  });
+  ['wmText','fontSize','wmColor','opacity','rotation','imgWidth','tiled'].forEach(function(id){ $(id).addEventListener('input',updatePreview); $(id).addEventListener('change',updatePreview); });
+  function anchorStyle(pos){
+    var map={'top-left':['4%','4%','translate(0,0)'],'top-center':['50%','4%','translate(-50%,0)'],'top-right':['96%','4%','translate(-100%,0)'],'middle-left':['4%','50%','translate(0,-50%)'],'center':['50%','50%','translate(-50%,-50%)'],'middle-right':['96%','50%','translate(-100%,-50%)'],'bottom-left':['4%','96%','translate(0,-100%)'],'bottom-center':['50%','96%','translate(-50%,-100%)'],'bottom-right':['96%','96%','translate(-100%,-100%)']};
+    return map[pos]||map['center'];
+  }
+  function updatePreview(){
+    $('fontSizeVal').textContent=$('fontSize').value+' pt'; $('opacityVal').textContent=$('opacity').value+'%'; $('rotationVal').textContent=$('rotation').value+'°'; $('imgWidthVal').textContent=$('imgWidth').value+' pt';
+    var a=anchorStyle(position), op=$('opacity').value/100, rot=$('rotation').value;
+    var pm=$('previewMark'), pi=$('previewImg');
+    if(mode==='text'){
+      pi.classList.add('hidden'); pm.classList.remove('hidden');
+      pm.textContent=PageMarkLib.sanitizeText($('wmText').value)||'WATERMARK';
+      pm.style.color=$('wmColor').value; pm.style.fontSize=Math.max(12,Math.min(44,$('fontSize').value*0.65))+'px'; pm.style.opacity=op;
+      pm.style.left=a[0]; pm.style.top=a[1]; pm.style.transform=a[2]+' rotate('+rot+'deg)';
+      if($('tiled').checked){ pm.style.left='50%'; pm.style.top='50%'; pm.style.transform='translate(-50%,-50%) rotate('+rot+'deg)'; }
+    }else{
+      pm.classList.add('hidden');
+      if(imageURL){ pi.classList.remove('hidden'); pi.src=imageURL; pi.style.opacity=op; pi.style.width=Math.max(50,Math.min(200,$('imgWidth').value*0.6))+'px'; pi.style.left=a[0]; pi.style.top=a[1]; pi.style.transform=a[2]+' rotate('+rot+'deg)'; }
+    }
+  }
+  $('applyBtn').addEventListener('click',async function(){
+    var cfg={type:mode,text:$('wmText').value,hasImage:!!imageBytes,position:position,opacity:$('opacity').value/100,tiled:$('tiled').checked};
+    if(!pdfBytes){ setStatus('Add a PDF first.','#dc2626'); return; }
+    var v=PageMarkLib.validateConfig(cfg); if(!v.valid){ setStatus(v.errors[0],'#dc2626'); return; }
+    var btn=$('applyBtn'); btn.disabled=true; btn.textContent='Working…';
+    try{
+      var doc=await PDFLib.PDFDocument.load(pdfBytes);
+      var op=PageMarkLib.clampOpacity(cfg.opacity), rot=PageMarkLib.normalizeRotation(Number($('rotation').value));
+      var embedded=null, imgDims=null;
+      if(mode==='image'){ embedded=imageType==='png'?await doc.embedPng(imageBytes):await doc.embedJpg(imageBytes); var sc=Number($('imgWidth').value)/embedded.width; imgDims={width:Number($('imgWidth').value),height:embedded.height*sc}; }
+      var font=null; if(mode==='text') font=await doc.embedFont(PDFLib.StandardFonts.HelveticaBold);
+      var pages=doc.getPages();
+      for(var i=0;i<pages.length;i++){
+        var page=pages[i], size=page.getSize(), wmW, wmH, drawFn;
+        if(mode==='text'){
+          var text=PageMarkLib.sanitizeText($('wmText').value), fs=PageMarkLib.clampFontSize($('fontSize').value);
+          wmW=font.widthOfTextAtSize(text,fs); wmH=fs;
+          var rgb=PageMarkLib.hexToRgb01($('wmColor').value); var col=PDFLib.rgb(rgb.r,rgb.g,rgb.b);
+          (function(p,t,f,c){ drawFn=function(x,y){ p.drawText(t,{x:x,y:y,size:f,font:font,color:c,opacity:op,rotate:PDFLib.degrees(rot)}); }; })(page,text,fs,col);
+        }else{
+          wmW=imgDims.width; wmH=imgDims.height;
+          (function(p){ drawFn=function(x,y){ p.drawImage(embedded,{x:x,y:y,width:wmW,height:wmH,opacity:op,rotate:PDFLib.degrees(rot)}); }; })(page);
+        }
+        if($('tiled').checked){ PageMarkLib.getTilePositions(size.width,size.height,wmW,wmH,230,230).forEach(function(t){ drawFn(t.x,t.y); }); }
+        else { var an=PageMarkLib.getAnchor(position,size.width,size.height,wmW,wmH,36); drawFn(an.x,an.y); }
+      }
+      var out=await doc.save();
+      var blob=new Blob([out],{type:'application/pdf'}); var url=URL.createObjectURL(blob);
+      var dl=$('downloadLink'); dl.href=url; dl.download=PageMarkLib.outputFileName(pdfName); dl.classList.remove('hidden'); dl.textContent='⬇ Download '+dl.download+' ('+PageMarkLib.formatFileSize(out.length)+')';
+      setStatus('Done — watermark applied to all '+pages.length+' page(s).','#15803d');
+    }catch(e){ setStatus('Something went wrong while writing the PDF. Try a different file.','#dc2626'); }
+    btn.disabled=false; btn.textContent='Apply watermark to all pages';
+  });
+  updatePreview();
+})();
+</script>
+</body>
+</html>
